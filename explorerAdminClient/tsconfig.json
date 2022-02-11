@@ -2,7 +2,11 @@
     "extends": "../devTools/tsconfigs/tsconfig.base.json",
     "compilerOptions": {
         "outDir": "../itsJustJavascript/explorerAdminClient",
-        "rootDir": "."
+        "rootDir": ".",
+        // need this for Handsontable.registerAllPlugins to work correctly.
+        // it won't work correctly with CommonJS imports.
+        // see https://github.com/handsontable/handsontable/issues/9140
+        "module": "ES2020"
     },
     "references": [
         { "path": "../clientUtils" },
