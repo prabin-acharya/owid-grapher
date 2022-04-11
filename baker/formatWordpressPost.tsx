@@ -126,6 +126,15 @@ export const formatWordpressPost = async (
 ): Promise<FormattedPost> => {
     let html = post.content
 
+    // Inject key insights early so they can be formatted by the embedding
+    // article. Another option would be to format the content independently,
+    // which would allow for inclusion further down the formatting pipeline.
+    // This is however creating issues by running non-idempotent formatting
+    // functions twice on the same content (e.g. table processing double wraps
+    // in "tableContainer" divs). On the other hand, rendering key insights last
+    // would require special care for footnotes.
+    html = await renderKeyInsights(html)
+
     // Standardize urls
     html = formatUrls(html)
 
@@ -573,11 +582,6 @@ export const formatWordpressPost = async (
             )
         }
     })
-
-    // This runs formatPost() on the key insight slides content. By running it
-    // last, we prevent double-pass formatting of non-idempotent functions (e.g.
-    // table processing).
-    await renderKeyInsights(cheerioEl, grapherExports)
 
     return {
         ...post,
